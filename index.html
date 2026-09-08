@@ -104,6 +104,10 @@
             </div>
             <form id="uploadForm" onsubmit="handleUpload(event)" class="p-6 space-y-4">
                 <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Judul Video</label>
+                    <input type="text" id="videoTitleInput" required class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2 px-3 text-sm text-white focus:outline-none focus:border-red-500" placeholder="Masukkan judul video...">
+                </div>
+                <div>
                     <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Pilih File Video</label>
                     <input type="file" id="videoFile" accept="video/*" required class="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-75 cursor-pointer">
                 </div>
@@ -166,7 +170,6 @@
         function handleLogin(e) {
             e.preventDefault();
             const pass = document.getElementById('adminPassword').value;
-            // Ganti 'admin123' dengan password bebas pilihan Anda
             if (pass === 'admin123') {
                 isAdmin = true;
                 localStorage.setItem('isAdmin', 'true');
@@ -208,26 +211,32 @@
         async function handleUpload(e) {
             e.preventDefault();
             const fileInput = document.getElementById('videoFile');
+            const titleInput = document.getElementById('videoTitleInput').value;
+
             if (fileInput.files.length > 0) {
                 const formData = new FormData();
                 formData.append('video', fileInput.files[0]);
+                formData.append('title', titleInput);
+
+                alert('Sedang mengunggah video, mohon tunggu sebentar...');
                 try {
                     const res = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
                     const result = await res.json();
                     if (res.ok) {
                         alert('Video berhasil di-upload!');
+                        document.getElementById('uploadForm').reset();
                         closeUploadModal();
                         fetchVideos();
                     } else {
                         alert('Gagal: ' + result.message);
                     }
-                } catch (err) { alert('Terjadi kesalahan koneksi.'); }
+                } catch (err) { alert('Terjadi kesalahan koneksi saat mengunggah.'); }
             }
         }
 
         async function deleteVideo(filename, event) {
-            event.stopPropagation(); // Mencegah video terputar saat tombol hapus diklik
-            if (confirm(`Yakin ingin menghapus video ${filename}?`)) {
+            event.stopPropagation();
+            if (confirm(`Yakin ingin menghapus video ini?`)) {
                 try {
                     const res = await fetch(`${API_URL}/delete/${filename}`, { method: 'DELETE' });
                     const result = await res.json();
@@ -261,7 +270,7 @@
                     let deleteButtonHTML = '';
                     if (isAdmin) {
                         deleteButtonHTML = `
-                            <button onclick="deleteVideo('${video.name}', event)" class="absolute top-2 left-2 bg-red-600/90 hover:bg-red-700 text-white text-xs px-2.5 py-1 rounded-md shadow transition flex items-center space-x-1 cursor-pointer">
+                            <button onclick="deleteVideo('${video.name}', event)" class="absolute top-2 left-2 bg-red-600/90 hover:bg-red-700 text-white text-xs px-2.5 py-1 rounded-md shadow transition flex items-center space-x-1 cursor-pointer z-10">
                                 <i class="fa-solid fa-trash"></i> <span>Hapus</span>
                             </button>
                         `;
