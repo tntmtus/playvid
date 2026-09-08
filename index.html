@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamFlix - Platform Streaming Video Publik</title>
+    <!-- Tailwind CSS untuk Desain Modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased">
+
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <a href="#" class="flex items-center space-x-2">
+                    <div class="bg-red-600 p-2 rounded-lg text-white">
+                        <i class="fa-solid fa-play"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-wider text-white">Stream<span class="text-red-600">Flix</span></span>
+                </a>
+            </div>
+
+            <div class="hidden md:flex items-center flex-1 max-w-md mx-8">
+                <div class="relative w-full">
+                    <input type="text" placeholder="Cari video, kreator, atau kategori..." class="w-full bg-slate-800 border border-slate-700 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-red-500 transition">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400"></i>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <button onclick="openUploadModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm font-medium transition flex items-center space-x-2 cursor-pointer">
+                    <i class="fa-solid fa-upload"></i>
+                    <span class="hidden sm:inline">Upload Video</span>
+                </button>
+                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center font-bold text-white cursor-pointer">
+                    U
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- HERO / FEATURED VIDEO SECTION -->
+        <section class="mb-10">
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-slate-800 aspect-video md:aspect-[21/9]">
+                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop" alt="Featured Video" class="w-full h-full object-cover opacity-60">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent flex flex-col justify-end p-6 md:p-10">
+                    <span class="bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full w-max mb-3">Trending #1</span>
+                    <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-2">Eksplorasi Dunia Digital: Masa Depan Teknologi 3D & AI</h1>
+                    <p class="text-slate-300 text-sm md:text-base max-w-2xl mb-4 line-clamp-2">Saksikan bagaimana kecerdasan buatan dan teknologi visual mentransformasi cara kita bekerja dan menikmati hiburan di masa depan.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIDEO GRID SECTION -->
+        <section>
+            <h2 class="text-xl font-bold mb-6 flex items-center space-x-2">
+                <i class="fa-solid fa-fire text-red-500"></i>
+                <span>Video Publik Terbaru</span>
+            </h2>
+
+            <!-- Tempat video dari server akan muncul otomatis di sini -->
+            <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Video akan dimuat lewat JavaScript dari server -->
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL PEMUTAR VIDEO (PLAYER) -->
+    <div id="playerModal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+                <h3 id="playerTitle" class="text-lg font-bold text-white">Judul Video</h3>
+                <button onclick="closePlayerModal()" class="text-slate-400 hover:text-white transition cursor-pointer text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 bg-black aspect-video flex items-center justify-center">
+                <video id="videoPlayerElement" controls class="w-full h-full max-h-[500px]">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="px-6 py-4 flex items-center justify-between bg-slate-900">
+                <p id="playerAuthor" class="text-sm text-slate-400 font-medium">Kreator</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL POPUP UPLOAD VIDEO -->
+    <div id="uploadModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-cloud-arrow-up text-red-500"></i>
+                    <span>Upload Video ke Server</span>
+                </h3>
+                <button onclick="closeUploadModal()" class="text-slate-400 hover:text-white transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <form id="uploadForm" onsubmit="handleUpload(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Judul Video</label>
+                    <input type="text" id="videoTitle" required placeholder="Contoh: Vlog Perjalanan" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-3 text-sm text-white focus:outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Nama Kreator / Channel</label>
+                    <input type="text" id="videoAuthor" required placeholder="Contoh: Budi Santoso" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-3 text-sm text-white focus:outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Pilih File Video</label>
+                    <div class="border-2 border-dashed border-slate-700 hover:border-red-500 rounded-lg p-6 text-center cursor-pointer transition bg-slate-900/50">
+                        <input type="file" id="videoFile" accept="video/*" required class="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeUploadModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer">Batal</button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition cursor-pointer">Publikasikan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT JAVASCRIPT UTAMA (PENGHUBUNG KE BACKEND) -->
+    <script>
+        // Alamat Server Backend lokal Anda
+        const API_URL = 'http://localhost:3000';
+
+        // Saat halaman pertama kali dibuka, ambil data video dari server
+        window.onload = function() {
+            fetchVideos();
+        };
+
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.remove('hidden');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.add('hidden');
+            document.getElementById('uploadForm').reset();
+        }
+
+        function closePlayerModal() {
+            const modal = document.getElementById('playerModal');
+            const videoElem = document.getElementById('videoPlayerElement');
+            videoElem.pause();
+            videoElem.src = "";
+            modal.classList.add('hidden');
+        }
+
+        function playVideo(title, author, url) {
+            document.getElementById('playerTitle').innerText = title;
+            document.getElementById('playerAuthor').innerText = author;
+            const videoElem = document.getElementById('videoPlayerElement');
+            videoElem.src = url;
+            document.getElementById('playerModal').classList.remove('hidden');
+            videoElem.play();
+        }
+
+        // FUNGSI 1: Mengirim Video ke Backend saat Tombol Upload Ditekan
+        async function handleUpload(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('videoTitle').value;
+            const author = document.getElementById('videoAuthor').value;
+            const fileInput = document.getElementById('videoFile');
+
+            if (fileInput.files.length > 0) {
+                const formData = new FormData();
+                formData.append('title', title);
+                formData.append('author', author);
+                formData.append('videoFile', fileInput.files[0]);
+
+                try {
+                    // Mengirim data menggunakan fetch ke server Node.js
+                    const response = await fetch(`${API_URL}/api/upload`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert('Video berhasil di-upload ke server!');
+                        closeUploadModal();
+                        fetchVideos(); // Refresh daftar video otomatis
+                    } else {
+                        alert('Gagal meng-upload: ' + result.message);
+                    }
+                } catch (err) {
+                    console.error('Error:', err);
+                    alert('Tidak dapat terhubung ke server backend! Pastikan server.js sudah dijalankan.');
+                }
+            }
+        }
+
+        // FUNGSI 2: Mengambil Daftar Video dari Backend untuk Ditampilkan ke Layar
+        async function fetchVideos() {
+            try {
+                const response = await fetch(`${API_URL}/api/videos`);
+                const videos = await response.json();
+                
+                const videoGrid = document.getElementById('videoGrid');
+                videoGrid.innerHTML = ''; // Bersihkan tampilan lama
+
+                if (videos.length === 0) {
+                    videoGrid.innerHTML = '<p class="text-slate-400 text-sm col-span-full">Belum ada video yang di-upload.</p>';
+                    return;
+                }
+
+                // Masukkan setiap video dari server ke dalam HTML web
+                videos.forEach(video => {
+                    const card = document.div;
+                    const newCard = document.createElement('div');
+                    newCard.className = "group cursor-pointer";
+                    newCard.onclick = function() {
+                        playVideo(video.title, video.author, video.videoUrl);
+                    };
+
+                    newCard.innerHTML = `
+                        <div class="relative rounded-xl overflow-hidden bg-slate-800 aspect-video mb-3">
+                            <img src="${video.thumbnail}" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <span class="absolute bottom-2 right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded font-mono">Publik</span>
+                        </div>
+                        <div class="flex space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-slate-700 flex-shrink-0 overflow-hidden flex items-center justify-center font-bold text-white bg-gradient-to-tr from-blue-500 to-indigo-500">
+                                ${video.author.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-white group-hover:text-red-500 transition line-clamp-2 text-sm">${video.title}</h3>
+                                <p class="text-xs text-slate-400 mt-1">${video.author}</p>
+                                <p class="text-xs text-slate-500">${video.date}</p>
+                            </div>
+                        </div>
+                    `;
+                    videoGrid.appendChild(newCard);
+                });
+            } catch (err) {
+                console.error('Gagal memuat video dari server:', err);
+            }
+        }
+    </script>
+</body>
+</html>
