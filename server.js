@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Buat folder uploads jika belum ada
 const uploadDir = path.join(__dirname, 'uploads');
@@ -55,5 +55,5 @@ app.get('/videos', (req, res) => {
 
 // Jalankan Server
 app.listen(PORT, () => {
-    console.log(`Server berjalan di http://localhost:${PORT}`);
+    console.log(`Server berjalan di port ${PORT}`);
 });
