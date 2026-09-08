@@ -18,20 +18,24 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
+        // Mengambil judul kustom dari form jika ada, atau fallback ke nama asli
+        const customTitle = req.body.title ? req.body.title.replace(/[^a-zA-Z0-9-_]/g, '_') : '';
+        const ext = path.extname(file.originalname);
+        const filename = customTitle ? `${customTitle}-${Date.now()}${ext}` : `${Date.now()}${ext}`;
+        cb(null, filename);
     }
 });
 const upload = multer({ storage: storage });
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Middleware dengan batasan ukuran file besar (500MB)
+app.use(express.json({ limit: '500mb' }));
+app.use(express.urlencoded({ limit: '500mb', extended: true }));
 
 // Rute untuk menyajikan file statis (HTML dan video)
 app.use(express.static(__dirname));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Endpoint untuk Upload Video
+// Endpoint untuk Upload Video (Mendukung Judul Kustom)
 app.post('/upload', upload.single('video'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'Tidak ada file yang diunggah!' });
@@ -45,18 +49,16 @@ app.get('/videos', (req, res) => {
         if (err) {
             return res.status(500).json({ message: 'Gagal membaca direktori video' });
         }
-        const videoList = files.map(file => ({
-            name: file,
-            url: `/uploads/${file}`
-        }));
+        const videoList = files.map(file => {
+            return {
+                name: file,
+                url: `/uploads/${file}`
+            };
+        });
         res.json(videoList);
     });
 });
 
-// Jalankan Server
-app.listen(PORT, () => {
-    console.log(`Server berjalan di port ${PORT}`);
-});
 // Endpoint untuk Menghapus Video
 app.delete('/delete/:filename', (req, res) => {
     const filename = req.params.filename;
@@ -72,4 +74,9 @@ app.delete('/delete/:filename', (req, res) => {
     } else {
         res.status(404).json({ message: 'File video tidak ditemukan' });
     }
+});
+
+// Jalankan Server
+app.listen(PORT, () => {
+    console.log(`Server berjalan di port ${PORT}`);
 });
