@@ -57,3 +57,19 @@ app.get('/videos', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server berjalan di port ${PORT}`);
 });
+// Endpoint untuk Menghapus Video
+app.delete('/delete/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(uploadDir, filename);
+
+    if (fs.existsSync(filePath)) {
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                return res.status(500).json({ message: 'Gagal menghapus file video' });
+            }
+            res.json({ message: 'Video berhasil dihapus!' });
+        });
+    } else {
+        res.status(404).json({ message: 'File video tidak ditemukan' });
+    }
+});
